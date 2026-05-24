@@ -1,0 +1,343 @@
+# Golden seed set — 24 hand-curated historical resources covering the rubric extremes.
+# Used by `radar regression` to detect prompt/model drift.
+#
+# Tone: "content" is a deliberate condensed README/abstract excerpt. The evaluator
+# reads it just like real source content, so keep them realistic and signal-rich.
+
+items:
+  # ============================================================================
+  # Strong-recommend tier (high engineering value, clear Lab fit, low risk)
+  # ============================================================================
+  - uid: "golden:vllm"
+    title: "vllm-project/vllm"
+    url: "https://github.com/vllm-project/vllm"
+    kind: "repo"
+    summary: "A high-throughput, memory-efficient inference and serving engine for LLMs."
+    content: |
+      vLLM is a high-throughput and memory-efficient inference and serving engine for
+      LLMs. It introduces PagedAttention for KV cache management, achieves up to 24x
+      higher throughput than HuggingFace Transformers, and supports continuous batching,
+      tensor parallelism, AWQ/GPTQ quantization, and an OpenAI-compatible API server.
+      Apache-2.0 licensed; widely deployed in production. Install with
+      `pip install vllm`. Tested with PyTorch 2.1+ on CUDA-capable GPUs.
+    expected_aggregate: 4.4
+    expected_band: "strong_recommend"
+    tolerance: 0.6
+
+  - uid: "golden:llama3"
+    title: "Meta Llama 3 (8B / 70B)"
+    url: "https://huggingface.co/meta-llama/Meta-Llama-3-8B-Instruct"
+    kind: "model"
+    summary: "Meta's open-weight Llama 3 family — 8B and 70B variants with instruction tuning."
+    content: |
+      Llama 3 is Meta's next-generation open-weight LLM family, available in 8B and 70B
+      parameter variants. Trained on 15T tokens with improved tokenizer (128k vocab),
+      8K context, instruction-tuned with RLHF and DPO. Released under the Llama 3
+      Community License (permissive for most commercial use). Strong across reasoning,
+      code, and instruction-following benchmarks. Drop-in compatible with HF
+      Transformers, vLLM, and most serving stacks.
+    expected_aggregate: 4.5
+    expected_band: "strong_recommend"
+    tolerance: 0.5
+
+  - uid: "golden:langgraph"
+    title: "langchain-ai/langgraph"
+    url: "https://github.com/langchain-ai/langgraph"
+    kind: "repo"
+    summary: "Build resilient language agents as graphs."
+    content: |
+      LangGraph is a low-level orchestration framework for building stateful, multi-actor
+      applications with LLMs. Provides StateGraph, conditional edges, time-travel
+      debugging, durable execution via checkpoints, and human-in-the-loop workflows.
+      MIT-licensed, actively maintained by the LangChain team. `pip install langgraph`.
+    expected_aggregate: 4.0
+    expected_band: "strong_recommend"
+    tolerance: 0.6
+
+  - uid: "golden:sglang"
+    title: "sgl-project/sglang"
+    url: "https://github.com/sgl-project/sglang"
+    kind: "repo"
+    summary: "Structured generation language for LLMs — fast inference + control flow."
+    content: |
+      SGLang is a fast serving framework for LLMs and vision-language models. Features
+      RadixAttention for prefix caching, structured generation, continuous batching,
+      and outperforms vLLM on agent and JSON-output workloads. Apache-2.0. Bench
+      tables and reproduction scripts included.
+    expected_aggregate: 4.0
+    expected_band: "strong_recommend"
+    tolerance: 0.6
+
+  - uid: "golden:deepseek-r1"
+    title: "DeepSeek-R1 reasoning model"
+    url: "https://huggingface.co/deepseek-ai/DeepSeek-R1"
+    kind: "model"
+    summary: "Open-weight reasoning model trained with large-scale RL on chain-of-thought."
+    content: |
+      DeepSeek-R1 is an open-weight reasoning model achieving competitive results with
+      o1 on math and coding benchmarks. Trained with reinforcement learning targeting
+      long chain-of-thought. MIT license. Distilled smaller variants (1.5B-70B) also
+      released. Detailed technical report and reproduction recipes published.
+    expected_aggregate: 4.4
+    expected_band: "strong_recommend"
+    tolerance: 0.5
+
+  - uid: "golden:qwen2.5"
+    title: "Qwen2.5 model family"
+    url: "https://huggingface.co/Qwen/Qwen2.5-7B-Instruct"
+    kind: "model"
+    summary: "Alibaba Qwen 2.5 — strong multilingual open-weight LLM family with 0.5B-72B variants."
+    content: |
+      Qwen2.5 is a comprehensive open-weight LLM series spanning 0.5B to 72B parameters.
+      Apache-2.0 licensed for most variants; long context (up to 128K tokens), strong
+      instruction following, structured output, code, and math. Compatible with HF
+      Transformers, vLLM, llama.cpp, Ollama. Detailed model cards and benchmarks.
+    expected_aggregate: 4.3
+    expected_band: "strong_recommend"
+    tolerance: 0.5
+
+  - uid: "golden:rag-attention-paper"
+    title: "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks (Lewis et al.)"
+    url: "https://arxiv.org/abs/2005.11401"
+    kind: "paper"
+    summary: "Original RAG paper — combines parametric LM with non-parametric retrieval over Wikipedia."
+    content: |
+      We introduce RAG models, where the parametric memory is a pre-trained seq2seq
+      model and the non-parametric memory is a dense vector index of Wikipedia,
+      accessed with a pre-trained neural retriever. We compare two RAG formulations,
+      one which conditions on the same retrieved passages across the whole sequence,
+      and another which uses different passages per token. Achieves SOTA on three open
+      domain QA tasks. Code released. Paradigmatic contribution to retrieval-augmented LMs.
+    expected_aggregate: 4.0
+    expected_band: "strong_recommend"
+    tolerance: 0.6
+
+  # ============================================================================
+  # Watch tier (interesting but with caveats)
+  # ============================================================================
+  - uid: "golden:autogen"
+    title: "microsoft/autogen"
+    url: "https://github.com/microsoft/autogen"
+    kind: "repo"
+    summary: "Multi-agent conversation framework — earlier 0.2.x, now in transition to 0.4 / AG2 fork."
+    content: |
+      AutoGen enables LLM applications via multiple agents that converse to solve
+      tasks. The 0.2 line is widely used and well-documented but is being replaced by
+      a different async-first 0.4 line. The community has also forked into AG2.
+      MIT licensed. Some breaking changes between versions are flagged in the README.
+    expected_aggregate: 3.0
+    expected_band: "watch"
+    tolerance: 0.7
+
+  - uid: "golden:tinyllama"
+    title: "TinyLlama 1.1B"
+    url: "https://huggingface.co/TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+    kind: "model"
+    summary: "1.1B parameter Llama-architecture model trained on 3T tokens. Edge-friendly."
+    content: |
+      TinyLlama is a 1.1B Llama-architecture model trained for 3T tokens. Apache-2.0.
+      Useful as an on-device baseline; quality is below 7B-tier models but it runs on
+      CPUs and small GPUs. Authors are a small student team — no formal release cadence.
+    expected_aggregate: 2.8
+    expected_band: "watch"
+    tolerance: 0.7
+
+  - uid: "golden:graphrag"
+    title: "microsoft/graphrag"
+    url: "https://github.com/microsoft/graphrag"
+    kind: "repo"
+    summary: "Graph-augmented retrieval over LLM-extracted entity-relationship graphs."
+    content: |
+      GraphRAG augments retrieval with an LLM-built knowledge graph over the corpus,
+      then applies community detection and summarization for global queries. MIT
+      license. Effective for "global" sense-making queries; expensive at index time
+      because every chunk goes through an LLM extraction pass. Active development.
+    expected_aggregate: 3.4
+    expected_band: "watch"
+    tolerance: 0.7
+
+  - uid: "golden:medusa"
+    title: "FasterDecoding/Medusa"
+    url: "https://github.com/FasterDecoding/Medusa"
+    kind: "repo"
+    summary: "Medusa heads — speculative decoding without a separate draft model."
+    content: |
+      Medusa adds multiple decoding heads to an LLM, predicting several tokens in
+      parallel. 2-3x speedup with minimal quality loss for code/instruct workloads.
+      Research-oriented codebase; integration into mainstream serving stacks (vLLM,
+      TensorRT-LLM) is partial. Apache-2.0.
+    expected_aggregate: 3.2
+    expected_band: "watch"
+    tolerance: 0.7
+
+  - uid: "golden:trl"
+    title: "huggingface/trl"
+    url: "https://github.com/huggingface/trl"
+    kind: "repo"
+    summary: "Transformer Reinforcement Learning — RLHF/DPO/PPO trainers built on Transformers."
+    content: |
+      TRL is a full-stack library for post-training LLMs: SFT, RLHF (PPO), DPO, KTO,
+      ORPO. Apache-2.0. Strong HF ecosystem integration; tested examples for popular
+      base models. Useful but mostly for teams already willing to invest in
+      post-training pipelines.
+    expected_aggregate: 3.5
+    expected_band: "strong_recommend"
+    tolerance: 0.7
+
+  - uid: "golden:rerankers-paper"
+    title: "RankZephyr: Listwise Reranking with Open-Source LLMs"
+    url: "https://arxiv.org/abs/2312.02724"
+    kind: "paper"
+    summary: "Listwise reranking using open-source LLMs trained from GPT-4 distillation."
+    content: |
+      We introduce RankZephyr, an open-source LLM reranker trained on GPT-4-distilled
+      listwise rankings. Achieves performance close to GPT-4 reranking on TREC DL.
+      Apache-2.0. Useful for RAG pipelines that need a quality reranker without OpenAI
+      dependency. Limited beyond English / small batch sizes.
+    expected_aggregate: 3.2
+    expected_band: "watch"
+    tolerance: 0.7
+
+  - uid: "golden:opencompass"
+    title: "open-compass/opencompass"
+    url: "https://github.com/open-compass/opencompass"
+    kind: "repo"
+    summary: "Multi-benchmark LLM evaluation harness."
+    content: |
+      OpenCompass is a benchmark suite covering 100+ datasets across reasoning, code,
+      math, multi-lingual. Apache-2.0. Configuration-driven; supports HF and API
+      models. Heavyweight to set up; useful when serious about evaluation.
+    expected_aggregate: 3.4
+    expected_band: "watch"
+    tolerance: 0.7
+
+  # ============================================================================
+  # Monitor tier (low signal, immature, narrow, or unclear)
+  # ============================================================================
+  - uid: "golden:abandoned-toy"
+    title: "user/llm-funny-toy"
+    url: "https://github.com/example/llm-funny-toy"
+    kind: "repo"
+    summary: "A weekend project showing GPT can write haiku."
+    content: |
+      Demo repo. One commit. No license. No tests. README is two paragraphs.
+      Last update 11 months ago. Author has not responded to issues.
+    expected_aggregate: 1.0
+    expected_band: "monitor"
+    tolerance: 0.6
+
+  - uid: "golden:closed-source-paper"
+    title: "Internal Megacorp LLM-Z technical report"
+    url: "https://arxiv.org/abs/0000.00000"
+    kind: "paper"
+    summary: "A closed-weights model claimed to beat GPT-4. Few methodological details."
+    content: |
+      Technical report describing LLM-Z (300B parameters), trained on undisclosed data
+      with undisclosed compute. Weights not released. Code not released. Benchmark
+      numbers reported but no setup details.
+    expected_aggregate: 1.6
+    expected_band: "monitor"
+    tolerance: 0.7
+
+  - uid: "golden:incremental-prompt-paper"
+    title: "Yet Another Chain-of-Thought Variant: ToT-CoT-Plus"
+    url: "https://arxiv.org/abs/0000.11111"
+    kind: "paper"
+    summary: "Marginal extension of tree-of-thought. Small gains on toy benchmarks."
+    content: |
+      We propose ToT-CoT-Plus, which adds an extra verification step to tree-of-thought
+      prompting. Evaluated on a custom 50-example benchmark; reports +1.2 percentage
+      points over ToT. No code. No analysis on standard benchmarks.
+    expected_aggregate: 1.5
+    expected_band: "monitor"
+    tolerance: 0.7
+
+  - uid: "golden:nft-llm"
+    title: "blockchain-ai/llm-nft-defi-bot"
+    url: "https://github.com/example/llm-nft-defi-bot"
+    kind: "repo"
+    summary: "An LLM agent that auto-trades NFTs."
+    content: |
+      Combines GPT-4 with a DeFi/NFT trading bot. README emphasizes blockchain and
+      cryptocurrency angles. Excluded by Lab profile blacklist.
+    expected_aggregate: 0.5
+    expected_band: "monitor"
+    tolerance: 0.8
+
+  - uid: "golden:gpl-strict-repo"
+    title: "strict-gpl/llm-toolkit"
+    url: "https://github.com/example/strict-gpl-llm-toolkit"
+    kind: "repo"
+    summary: "Useful tooling but AGPL-3.0 license — viral for SaaS."
+    content: |
+      A capable LLM tooling library. Solid engineering, tests, docs. License: AGPL-3.0.
+      The viral copyleft makes it incompatible with our internal SaaS deployments.
+      Single maintainer, but with steady commit cadence.
+    expected_aggregate: 2.0
+    expected_band: "monitor"
+    tolerance: 0.8
+
+  - uid: "golden:nano-survey"
+    title: "A One-Page Survey of Prompt Engineering"
+    url: "https://arxiv.org/abs/0000.22222"
+    kind: "paper"
+    summary: "Two-page summary that tabulates a few existing prompt patterns."
+    content: |
+      Brief overview of common prompt patterns. No new ideas, no benchmarks, no code.
+      Could serve as quick onboarding reference but offers no Lab-actionable contribution.
+    expected_aggregate: 1.2
+    expected_band: "monitor"
+    tolerance: 0.6
+
+  - uid: "golden:tutorial-repo"
+    title: "good-tutorials/llm-from-scratch"
+    url: "https://github.com/example/llm-from-scratch"
+    kind: "repo"
+    summary: "Educational repo: builds a 100M-parameter LM step by step."
+    content: |
+      Educational walk-through that constructs an LM from scratch in a notebook.
+      Excellent for new joiners. MIT license. Not intended for production. No active
+      releases beyond the tutorial chapters.
+    expected_aggregate: 2.0
+    expected_band: "monitor"
+    tolerance: 0.6
+
+  - uid: "golden:bge-m3"
+    title: "BAAI/bge-m3"
+    url: "https://huggingface.co/BAAI/bge-m3"
+    kind: "model"
+    summary: "Multi-lingual, multi-functional, multi-granular embedding model."
+    content: |
+      BGE-M3 is a multi-functional embedding model supporting dense, multi-vector, and
+      sparse retrieval simultaneously. 100+ languages, up to 8192 tokens. MIT license.
+      Strong on multi-lingual retrieval benchmarks. Widely used in production RAG stacks.
+    expected_aggregate: 4.1
+    expected_band: "strong_recommend"
+    tolerance: 0.6
+
+  - uid: "golden:dspy"
+    title: "stanfordnlp/dspy"
+    url: "https://github.com/stanfordnlp/dspy"
+    kind: "repo"
+    summary: "Programming — not prompting — language models."
+    content: |
+      DSPy is a framework for algorithmically optimizing LM prompts and weights, by
+      treating LM calls as differentiable modules. MIT license. Significant ecosystem
+      momentum; learning curve is non-trivial. Useful for teams that want
+      reproducible, optimized pipelines instead of hand-tuned prompts.
+    expected_aggregate: 3.6
+    expected_band: "strong_recommend"
+    tolerance: 0.7
+
+  - uid: "golden:experimental-decoding"
+    title: "Speculative Decoding via Random Projections (research preprint)"
+    url: "https://arxiv.org/abs/0000.33333"
+    kind: "paper"
+    summary: "Theoretical: lossless speculative decoding using random hash sketches."
+    content: |
+      We propose using random projections of hidden states for speculative draft
+      model selection. Theoretical analysis suggests potential 1.5x speedups, but no
+      empirical validation on real LLMs. Code not yet released.
+    expected_aggregate: 2.2
+    expected_band: "monitor"
+    tolerance: 0.8

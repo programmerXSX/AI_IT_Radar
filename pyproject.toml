@@ -1,0 +1,106 @@
+[project]
+name = "ai-it-radar"
+version = "0.1.0"
+description = "Tech intelligence radar for AI Lab — multi-agent scanning, RAG-augmented triage and lightweight evaluation harness."
+readme = "README.md"
+# Pinned to a tested range. uv will install a matching interpreter automatically
+# if you don't already have one (see .python-version).
+requires-python = ">=3.11,<3.13"
+authors = [{ name = "AI Lab" }]
+license = { text = "MIT" }
+
+dependencies = [
+    # Orchestration
+    "langgraph>=0.2.50",
+    "langchain>=0.3.0",
+    "langchain-core>=0.3.0",
+    "langchain-community>=0.3.0",
+    "langchain-openai>=0.2.0",
+
+    # RAG / vector store
+    "chromadb>=0.5.0",
+    "sentence-transformers>=3.0.0",
+    # Declared explicitly so we can pin it to the CPU wheel index on Windows.
+    "torch>=2.4.0",
+    # Alibaba Tongyi DashScope SDK — used by the `dashscope` embedding provider.
+    "dashscope>=1.20.0",
+
+    # Sources
+    "arxiv>=2.1.0",
+    "httpx>=0.27.0",
+    "huggingface-hub>=0.25.0",
+    "feedparser>=6.0.11",
+    "beautifulsoup4>=4.12.0",
+    "lxml>=5.0.0",
+
+    # Scheduling & web
+    "APScheduler>=3.10.0",
+    "fastapi>=0.115.0",
+    "uvicorn>=0.30.0",
+
+    # Templates / data / config
+    "jinja2>=3.1.0",
+    "pydantic>=2.8.0",
+    "pydantic-settings>=2.4.0",
+    "PyYAML>=6.0.1",
+    "typer>=0.12.0",
+    "rich>=13.7.0",
+    "python-dotenv>=1.0.1",
+
+    # SQLite checkpoint backend for LangGraph
+    "langgraph-checkpoint-sqlite>=2.0.0",
+]
+
+# PEP 735 dependency groups — uv's preferred replacement for optional-dependencies.
+[dependency-groups]
+dev = [
+    "pytest>=8.3.0",
+    "pytest-asyncio>=0.24.0",
+    "ruff>=0.6.0",
+]
+
+[project.scripts]
+radar = "ai_it_radar.cli:app"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/ai_it_radar"]
+
+# ---- uv-specific configuration --------------------------------------------------------
+# Tell uv this is a uv-managed project; .venv lives in the project root and uv.lock
+# is the source of truth for reproducible installs.
+[tool.uv]
+managed = true
+package = true
+
+# Pin PyTorch to the CPU wheel index. Without this, on Windows uv will pull the
+# CUDA-flavoured wheel which (a) is ~2GB and (b) won't run without CUDA installed.
+# If you have a CUDA GPU and want acceleration, comment out the [[tool.uv.index]]
+# block and the [tool.uv.sources] section, then re-run `uv sync`.
+[[tool.uv.index]]
+name = "pytorch-cpu"
+#url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+default = true
+
+[tool.uv.sources]
+torch = [
+    { index = "pytorch-cpu", marker = "sys_platform == 'win32' or sys_platform == 'linux'" },
+]
+
+# ---- Tooling ---------------------------------------------------------------------------
+[tool.ruff]
+line-length = 110
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"

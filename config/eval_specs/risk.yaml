@@ -1,0 +1,41 @@
+id: risk
+display_name: "Risk"
+weight: 0.15
+# Higher score = LOWER risk (more attractive). Aggregator inverts naturally.
+rubric:
+  0: "Severe risk: incompatible license, undisclosed data, single-author abandoned repo, security issues."
+  1: "Multiple concerning signals (license unclear AND single-maintainer)."
+  2: "One concerning signal (e.g. permissive but unmaintained 6 months)."
+  3: "Minor risks only; reasonable governance."
+  4: "Healthy: permissive license, multi-contributor, recent commits, transparent provenance."
+  5: "Best-in-class governance: permissive license, foundation/large org, public release process."
+
+rag_neighbors_k: 0
+
+prompt_template: |
+  You are flagging RISKS for adopting an external AI resource.
+
+  ## Candidate
+  Title: {{ title }}
+  Type: {{ kind }}
+  License: {{ license or "UNKNOWN" }}
+  Maintainer signal: stars={{ stars or "n/a" }}, contributors={{ contributors or "n/a" }}, last_commit={{ last_commit or "n/a" }}
+
+  ## Content (look for: license clauses, training data origin, dependencies, abandonment signals)
+  {{ content }}
+
+  ## Task
+  Score 0-5 (higher = lower risk). List concrete risks identified. Cite source quotes
+  where applicable. Pay special attention to: license, training-data provenance, single
+  point of failure, security disclosures.
+
+  Rubric:
+  {% for k, v in rubric.items() %}- {{ k }}: {{ v }}
+  {% endfor %}
+
+  Output STRICT JSON:
+  {
+    "score": <int>, "confidence": <float>,
+    "rationale": "<...>", "quote": "<...>",
+    "risks": ["..."]
+  }

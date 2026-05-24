@@ -1,0 +1,40 @@
+id: reproduction_cost
+display_name: "Reproduction Cost"
+weight: 0.15
+# Note: HIGHER score == LOWER cost (i.e. more attractive). The aggregator inverts naturally.
+rubric:
+  0: "Practically infeasible: massive compute / closed data / undisclosed steps."
+  1: "Multi-week, large GPU budget; substantial engineering."
+  2: "Few days on a single A100/H100; non-trivial setup."
+  3: "Hours on a single GPU; published checkpoints / scripts available."
+  4: "Minutes on consumer GPU; pip-installable; clear demo."
+  5: "Trivial: hosted endpoint or one-line install with built-in defaults."
+
+rag_neighbors_k: 3
+
+prompt_template: |
+  You are estimating REPRODUCTION COST (inverted: higher score = easier).
+
+  ## Candidate
+  Title: {{ title }}
+  Type: {{ kind }}
+  License: {{ license or "n/a" }}
+
+  ## Content (look for: install steps, hardware mentions, checkpoint links, dataset access)
+  {{ content }}
+
+  ## Reference anchors
+  {% for n in neighbors %}- {{ n.title }} -> reproduction_cost {{ n.score }} ({{ n.rationale }})
+  {% endfor %}
+
+  ## Task
+  Score 0-5 (higher = easier to reproduce). Cite concrete signals (e.g. "uses 8xH100",
+  "pip install ...", "no training script provided"). If unclear, default to 2 and say
+  "INSUFFICIENT_CONTENT" in rationale.
+
+  Rubric:
+  {% for k, v in rubric.items() %}- {{ k }}: {{ v }}
+  {% endfor %}
+
+  Output STRICT JSON:
+  { "score": <int>, "confidence": <float>, "rationale": "<...>", "quote": "<...>" }

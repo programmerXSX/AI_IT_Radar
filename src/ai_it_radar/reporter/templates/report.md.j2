@@ -1,0 +1,72 @@
+# AI IT Radar — Weekly Brief
+
+**Period:** {{ report.period_start.strftime("%Y-%m-%d") }} → {{ report.period_end.strftime("%Y-%m-%d") }}
+**Generated:** {{ report.generated_at.strftime("%Y-%m-%d %H:%M UTC") }}
+
+| Band | Count |
+|---|---|
+| Strong Recommend | {{ report.strong_recommend | length }} |
+| Watch | {{ report.watch | length }} |
+| Monitor | {{ report.monitor | length }} |
+
+---
+
+{% macro item_block(it) -%}
+### {{ it.candidate.title }}
+- **Source:** {{ it.candidate.source.value }} / {{ it.candidate.kind.value }}
+- **URL:** {{ it.candidate.url }}
+{% if it.score %}- **Aggregate score:** {{ "%.2f"|format(it.score.aggregate) }} / 5.00 ({{ it.score.band }}){% if it.score.needs_human %} _(needs human review)_{% endif %}
+{% endif %}
+{% if it.score and it.score.dimensions %}
+| Dimension | Score | Confidence | Quote (来源: [link]({{ it.candidate.url }})) |
+|---|---|---|---|
+{% for d in it.score.dimensions %}| {{ d.dimension_id }} | {{ d.score }} | {{ "%.2f"|format(d.confidence) }} | {{ (d.quote or "")[:120] | replace("|","/") }} |
+{% endfor %}
+
+{% for d in it.score.dimensions %}
+- **{{ d.dimension_id }}** ({{ d.score }}/5)：{{ d.rationale }}{% if d.quote %} _原文_：&ldquo;{{ d.quote[:200] }}&rdquo; — [来源]({{ it.candidate.url }}){% endif %}
+{% endfor %}
+{% endif %}
+
+{% if it.analysis %}
+**Method:** {{ it.analysis.method_summary }}
+
+**Key capabilities:**
+{% for k in it.analysis.key_capabilities %}- {{ k }}
+{% endfor %}
+
+{% if it.analysis.dependency_stack %}**Stack:** {{ it.analysis.dependency_stack | join(", ") }}{% endif %}
+{% if it.analysis.license %}**License:** {{ it.analysis.license }}{% endif %}
+{% if it.analysis.known_limitations %}
+**Limitations:**
+{% for l in it.analysis.known_limitations %}- {{ l }}
+{% endfor %}
+{% endif %}
+{% endif %}
+
+---
+{% endmacro -%}
+
+## Strong Recommend
+{% if report.strong_recommend %}
+{% for it in report.strong_recommend %}{{ item_block(it) }}{% endfor %}
+{% else %}
+_No items in this band this cycle._
+{% endif %}
+
+## Watch
+{% if report.watch %}
+{% for it in report.watch %}{{ item_block(it) }}{% endfor %}
+{% else %}
+_No items in this band this cycle._
+{% endif %}
+
+## Monitor
+{% if report.monitor %}
+{% for it in report.monitor[:15] %}{{ item_block(it) }}{% endfor %}
+{% if report.monitor | length > 15 %}
+_(+{{ report.monitor | length - 15 }} more truncated; see HTML report.)_
+{% endif %}
+{% else %}
+_No items in this band this cycle._
+{% endif %}

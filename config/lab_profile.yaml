@@ -1,0 +1,83 @@
+name: Internal AI Lab
+description: 'Applied LLM systems team. Care strongly about engineering value: deployability,
+
+  reproducibility, license, and cost. Less interested in pure-theoretical results
+
+  unless they imply a clear engineering path.
+
+  '
+anchors:
+- topic: LLM serving / inference optimization
+  weight: 1.0
+  keywords:
+  - vllm
+  - sglang
+  - tensorrt-llm
+  - kv cache
+  - speculative decoding
+  - quantization
+- topic: Agent frameworks & orchestration
+  weight: 1.0
+  keywords:
+  - agent
+  - tool use
+  - workflow
+  - langgraph
+  - autogen
+  - function calling
+- topic: RAG & retrieval
+  weight: 0.9
+  keywords:
+  - retrieval
+  - embedding
+  - rerank
+  - rag
+  - vector database
+  - graphrag
+- topic: Reasoning & planning
+  weight: 0.8
+  keywords:
+  - reasoning
+  - chain-of-thought
+  - tree-of-thought
+  - planning
+  - o1
+  - self-refine
+- topic: Evaluation & benchmarking
+  weight: 0.7
+  keywords:
+  - benchmark
+  - evaluation
+  - harness
+  - leaderboard
+  - judge
+- topic: Open-weight models with permissive license
+  weight: 0.9
+  keywords:
+  - open-weight
+  - apache
+  - mit
+  - llama
+  - qwen
+  - deepseek
+  - mistral
+exclude_keywords:
+- blockchain
+- cryptocurrency
+- nft
+auto_learned:
+- topic: 视频理解与感知缺陷
+  weight: 0.65
+  keywords:
+  - video-llm
+  - motion blindness
+  - temporal understanding
+  - perceptual primitive
+- topic: 运动控制视频生成与因果推理
+  weight: 0.65
+  keywords:
+  - motion-controlled generation
+  - image-to-video
+  - trajectory
+  - causal reasoning
+  - visual reasoning

@@ -1,0 +1,50 @@
+id: novelty
+display_name: "Technical Novelty"
+weight: 0.20
+rubric:
+  0: "Pure repackaging of existing well-known techniques. Adds no new ideas."
+  1: "Incremental tweak on an established method (e.g. small architectural change)."
+  2: "A meaningful but expected next step in an active line of work."
+  3: "A non-obvious combination or extension that surprises practitioners."
+  4: "Introduces a new mechanism, formulation, or paradigm with broad implications."
+  5: "Likely paradigm-shifting; redefines what is possible in its sub-area."
+
+# Top-K analogous resources retrieved from KB and shown to the judge as anchors.
+rag_neighbors_k: 5
+
+prompt_template: |
+  You are evaluating the TECHNICAL NOVELTY of an AI resource for an internal AI Lab.
+
+  ## Candidate
+  Title: {{ title }}
+  URL: {{ url }}
+  Type: {{ kind }}
+  Summary:
+  {{ summary }}
+
+  ## Source content (README / abstract excerpt)
+  {{ content }}
+
+  ## Reference anchors (similar resources we have already evaluated)
+  {% for n in neighbors %}
+  - [{{ n.kind }}] {{ n.title }} (novelty score we previously gave: {{ n.score }})
+    Why: {{ n.rationale }}
+  {% endfor %}
+
+  ## Task
+  Score TECHNICAL NOVELTY on 0-5 using the rubric below. You MUST justify the score by
+  quoting at least ONE concrete sentence or fragment from the source content above (not
+  from the reference anchors). If the content is too thin to support any claim, return
+  score 0 with rationale "INSUFFICIENT_CONTENT".
+
+  Rubric:
+  {% for k, v in rubric.items() %}- {{ k }}: {{ v }}
+  {% endfor %}
+
+  Output STRICT JSON:
+  {
+    "score": <int 0-5>,
+    "confidence": <float 0-1>,
+    "rationale": "<reasoning>",
+    "quote": "<exact quote from source content>"
+  }

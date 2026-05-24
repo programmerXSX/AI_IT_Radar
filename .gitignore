@@ -1,0 +1,35 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+.env
+.env.local
+
+# uv: keep uv.lock committed (reproducible builds) but ignore the local cache.
+.uv-cache/
+
+# Project data
+data/
+!data/.gitkeep
+reports/
+!reports/.gitkeep
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Pytest / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Models cache
+.cache/
