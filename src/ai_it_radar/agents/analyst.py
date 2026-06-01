@@ -13,30 +13,29 @@ from ..schemas import Analysis, Candidate, GraphState
 log = logging.getLogger(__name__)
 
 
-_ANALYST_PROMPT = """You extract a STRUCTURED ENGINEERING SUMMARY from an AI resource.
-Stay STRICTLY grounded in the provided content; if a field is unsupported, use an empty
-list/string rather than guessing.
+_ANALYST_PROMPT = """你从一份 AI 资源中提取结构化的工程摘要。
+必须严格基于提供的内容；如果某个字段没有依据，请使用空列表/空字符串，不要猜测。
 
-## Candidate
+## 候选条目
 Title: {title}
 Type: {kind}
 URL: {url}
 Summary: {summary}
 
-## Source content (truncated)
+## 源内容（已截断）
 {content}
 
-## Analogous resources we have catalogued (use them only to phrase comparable terms; do NOT copy)
+## 我们已收录的类似资源（仅用于措辞参考，不要直接照抄）
 {analogies_block}
 
-Output STRICT JSON with these keys:
+输出 STRICT JSON，包含以下字段：
 {{
-  "key_capabilities": ["..."],          // 3-7 short capability statements
-  "method_summary": "...",              // 1-3 sentences, technical
-  "dependency_stack": ["..."],          // libraries / runtimes / hardware mentioned
-  "data_requirements": "...",           // training/eval data, if any
-  "license": "...",                     // SPDX-style if knowable, else null
-  "known_limitations": ["..."]          // explicit limitations stated by authors
+  "key_capabilities": ["..."],          // 3-7 条核心能力简述
+  "method_summary": "...",              // 1-3 句技术性总结
+  "dependency_stack": ["..."],          // 涉及的库 / 运行时 / 硬件
+  "data_requirements": "...",           // 训练或评估数据需求（如有）
+  "license": "...",                     // SPDX 格式，无法确定则 null
+  "known_limitations": ["..."]          // 作者明确指出的局限性
 }}
 """
 

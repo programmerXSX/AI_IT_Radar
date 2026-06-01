@@ -101,7 +101,7 @@ def _evaluate_one(
         except Exception as e:
             log.warning("evaluator dim=%s failed: %s", spec.id, e)
             raw = {"score": 0, "confidence": 0.0,
-                   "rationale": f"llm_error:{e}", "quote": ""}
+                   "rationale": f"模型调用异常：{e}", "quote": ""}
 
         ds = DimensionScore(
             dimension_id=spec.id,
@@ -133,7 +133,7 @@ def _evaluate_one(
         ):
             needs_human = True
             ds.score = (ds.score + verdict.suggested_score) // 2
-            ds.rationale += f" | critic_disagrees: {verdict.disagreement_reason}"
+            ds.rationale += f" | 复核意见：{verdict.disagreement_reason}"
 
         dims.append(ds)
 

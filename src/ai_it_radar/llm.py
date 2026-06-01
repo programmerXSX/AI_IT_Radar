@@ -99,10 +99,11 @@ DEFAULT_SYSTEM_PROMPT = """你是一名严谨、克制的 AI 技术评测助手�
 - 当被要求 STRICT JSON 时只输出一个 JSON 对象，前后无任何文字、无 markdown 代码块。"""
 
 
-# Appended to every user prompt as a final reinforcement. Crucial because the eval
-# rubric prompts themselves are written in English, and LLMs strongly tend to mirror
-# the user-message language. A short Chinese reminder right before output generation
-# is the single most reliable way to enforce Chinese rationales.
+# Appended to every user prompt as a final reinforcement. Even after most rubric
+# templates were localized to Chinese, source excerpts / field labels / historical
+# neighbors can still contain plenty of English, and LLMs tend to mirror that context.
+# A short Chinese reminder right before output generation remains the most reliable
+# way to keep rationale-style fields in Chinese.
 LANG_REMINDER = """
 
 ──────────────

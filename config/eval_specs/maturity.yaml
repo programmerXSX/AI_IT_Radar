@@ -2,40 +2,40 @@ id: maturity
 display_name: "Engineering Maturity"
 weight: 0.25
 rubric:
-  0: "Toy/demo only; no tests, no docs, no concrete usage path."
-  1: "Research-prototype quality; runs but obviously experimental."
-  2: "Usable with effort; partial docs/tests; rough edges visible."
-  3: "Production-leaning; clear quickstart, some test coverage, active commits."
-  4: "Production-ready in real users' hands; documented release process, CI, examples."
-  5: "Battle-tested at scale; mature ecosystem, version policy, multiple integrations."
+  0: "仅玩具/演示级别；无测试、无文档、无具体使用路径。"
+  1: "研究原型质量；能跑但明显是实验性的。"
+  2: "需要一定努力才能使用；部分文档/测试；可见粗糙之处。"
+  3: "倾向于生产级；有清晰的快速入门、一定测试覆盖、活跃提交。"
+  4: "有真实用户使用的生产级别；有文档化的发布流程、CI、示例。"
+  5: "大规模实战验证；成熟的生态系统、版本策略、多种集成。"
 
 rag_neighbors_k: 5
 
 prompt_template: |
-  You are evaluating the ENGINEERING MATURITY of an AI resource.
+  你正在评估一份 AI 资源的 ENGINEERING MATURITY（工程成熟度）。
 
-  ## Candidate
+  ## 候选条目
   Title: {{ title }}
   URL: {{ url }}
   Type: {{ kind }}
-  Repo metadata: stars={{ stars or "n/a" }}, last_commit={{ last_commit or "n/a" }}, license={{ license or "n/a" }}
+  仓库元数据: stars={{ stars or "n/a" }}, last_commit={{ last_commit or "n/a" }}, license={{ license or "n/a" }}
 
-  ## Source content (README / repo signals)
+  ## 源内容（README / 仓库信号）
   {{ content }}
 
-  ## Reference anchors
+  ## 参考锚点
   {% for n in neighbors %}
-  - {{ n.title }} -> we scored maturity {{ n.score }} ({{ n.rationale }})
+  - {{ n.title }} -> 此前 maturity 评分 {{ n.score }} （{{ n.rationale }}）
   {% endfor %}
 
-  ## Task
-  Score ENGINEERING MATURITY on 0-5. Anchor strongly on observable signals: tests,
-  docs structure, release cadence, install path, license. Quote at least one concrete
-  sentence/snippet to back the score. If signals are absent, score low rather than guess.
+  ## 任务
+  对 ENGINEERING MATURITY 进行 0-5 评分。重点依据可观测的信号：测试覆盖、文档结构、
+  发布节奏、安装路径、许可证。至少引用一句具体的句子或代码片段来支撑评分。
+  如果信号缺失，请打低分而非猜测。
 
   Rubric:
   {% for k, v in rubric.items() %}- {{ k }}: {{ v }}
   {% endfor %}
 
-  Output STRICT JSON:
+  输出 STRICT JSON：
   { "score": <int>, "confidence": <float>, "rationale": "<...>", "quote": "<...>" }

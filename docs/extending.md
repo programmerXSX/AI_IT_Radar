@@ -461,20 +461,16 @@ drift > tolerance 会非零退出。
 参考 [evaluator.py](../src/ai_it_radar/agents/evaluator.py) 和 [analyst.py](../src/ai_it_radar/agents/analyst.py)：
 
 ```python
-from ..llm import llm_json
+from ..llm import llm_json, primary_llm
 
-result = llm_json(
-    user_prompt=prompt,
-    model=settings.llm.model,
-    temperature=0.2,
-    max_tokens=800,
-)
+llm = primary_llm()
+result = llm_json(llm, prompt)
 ```
 
 `llm_json()` 已自动：
-- 拼接 Chinese system prompt + 语言提醒
+- 拼接中文 system prompt + 语言提醒（默认 `lang_reminder=True`）
 - 解析 JSON（含三级兜底处理坏字符）
-- 异常时 raise `LLMError`，不会让节点静默崩
+- 异常时抛出异常，交由调用方处理（不要静默吞掉）
 
 ### 5.4 加 embedding 调用
 

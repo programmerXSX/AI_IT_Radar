@@ -3,38 +3,38 @@ display_name: "Reproduction Cost"
 weight: 0.15
 # Note: HIGHER score == LOWER cost (i.e. more attractive). The aggregator inverts naturally.
 rubric:
-  0: "Practically infeasible: massive compute / closed data / undisclosed steps."
-  1: "Multi-week, large GPU budget; substantial engineering."
-  2: "Few days on a single A100/H100; non-trivial setup."
-  3: "Hours on a single GPU; published checkpoints / scripts available."
-  4: "Minutes on consumer GPU; pip-installable; clear demo."
-  5: "Trivial: hosted endpoint or one-line install with built-in defaults."
+  0: "几乎不可行：海量算力 / 封闭数据 / 未公开步骤。"
+  1: "需要数周、大量 GPU 预算；大量工程工作。"
+  2: "单张 A100/H100 上几天；设置不简单。"
+  3: "单 GPU 上数小时；有已发布的 checkpoint / 脚本可用。"
+  4: "消费级 GPU 上几分钟；可 pip 安装；有清晰的 demo。"
+  5: "极其简单：托管端点或一行安装命令，内置默认配置。"
 
 rag_neighbors_k: 3
 
 prompt_template: |
-  You are estimating REPRODUCTION COST (inverted: higher score = easier).
+  你正在估算 REPRODUCTION COST（复现成本，注意：分数越高 = 越容易复现）。
 
-  ## Candidate
+  ## 候选条目
   Title: {{ title }}
   Type: {{ kind }}
   License: {{ license or "n/a" }}
 
-  ## Content (look for: install steps, hardware mentions, checkpoint links, dataset access)
+  ## 内容（关注：安装步骤、硬件提及、checkpoint 链接、数据集访问方式）
   {{ content }}
 
-  ## Reference anchors
+  ## 参考锚点
   {% for n in neighbors %}- {{ n.title }} -> reproduction_cost {{ n.score }} ({{ n.rationale }})
   {% endfor %}
 
-  ## Task
-  Score 0-5 (higher = easier to reproduce). Cite concrete signals (e.g. "uses 8xH100",
-  "pip install ...", "no training script provided"). If unclear, default to 2 and say
-  "INSUFFICIENT_CONTENT" in rationale.
+  ## 任务
+  进行 0-5 评分（分数越高 = 越容易复现）。引用具体的信号（例如 "uses 8xH100"、
+  "pip install ..."、"no training script provided"）。如果信息不明确，默认给 2 分，
+  并在 rationale 中注明 "INSUFFICIENT_CONTENT"。
 
   Rubric:
   {% for k, v in rubric.items() %}- {{ k }}: {{ v }}
   {% endfor %}
 
-  Output STRICT JSON:
+  输出 STRICT JSON：
   { "score": <int>, "confidence": <float>, "rationale": "<...>", "quote": "<...>" }

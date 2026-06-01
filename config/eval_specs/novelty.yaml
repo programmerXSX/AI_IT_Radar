@@ -2,49 +2,48 @@ id: novelty
 display_name: "Technical Novelty"
 weight: 0.20
 rubric:
-  0: "Pure repackaging of existing well-known techniques. Adds no new ideas."
-  1: "Incremental tweak on an established method (e.g. small architectural change)."
-  2: "A meaningful but expected next step in an active line of work."
-  3: "A non-obvious combination or extension that surprises practitioners."
-  4: "Introduces a new mechanism, formulation, or paradigm with broad implications."
-  5: "Likely paradigm-shifting; redefines what is possible in its sub-area."
+  0: "纯粹将现有已知技术重新包装，没有新增任何想法。"
+  1: "对已有方法的微小改进（例如小幅架构调整）。"
+  2: "在活跃研究方向上迈出的有意义但可预期的下一步。"
+  3: "非显而易见的组合或扩展，令从业者感到意外。"
+  4: "引入了一种新机制、新公式或新范式，具有广泛影响。"
+  5: "很可能具有范式变革意义；重新定义其子领域的可能性边界。"
 
 # Top-K analogous resources retrieved from KB and shown to the judge as anchors.
 rag_neighbors_k: 5
 
 prompt_template: |
-  You are evaluating the TECHNICAL NOVELTY of an AI resource for an internal AI Lab.
+  你正在为内部 AI Lab 评估一份 AI 资源的 TECHNICAL NOVELTY（技术创新性）。
 
-  ## Candidate
+  ## 候选条目
   Title: {{ title }}
   URL: {{ url }}
   Type: {{ kind }}
   Summary:
   {{ summary }}
 
-  ## Source content (README / abstract excerpt)
+  ## 源内容（README / 摘要摘录）
   {{ content }}
 
-  ## Reference anchors (similar resources we have already evaluated)
+  ## 参考锚点（我们已评估过的类似资源）
   {% for n in neighbors %}
-  - [{{ n.kind }}] {{ n.title }} (novelty score we previously gave: {{ n.score }})
-    Why: {{ n.rationale }}
+  - [{{ n.kind }}] {{ n.title }} （此前给出的 novelty 评分: {{ n.score }}）
+    理由: {{ n.rationale }}
   {% endfor %}
 
-  ## Task
-  Score TECHNICAL NOVELTY on 0-5 using the rubric below. You MUST justify the score by
-  quoting at least ONE concrete sentence or fragment from the source content above (not
-  from the reference anchors). If the content is too thin to support any claim, return
-  score 0 with rationale "INSUFFICIENT_CONTENT".
+  ## 任务
+  使用以下 Rubric 对 TECHNICAL NOVELTY 进行 0-5 评分。你必须从上面的源内容中
+  引用至少一句具体的句子或片段来支撑你的评分（不能引用参考锚点中的内容）。
+  如果内容过于单薄，无法支撑任何判断，请返回 score 0，rationale 填写 "INSUFFICIENT_CONTENT"。
 
   Rubric:
   {% for k, v in rubric.items() %}- {{ k }}: {{ v }}
   {% endfor %}
 
-  Output STRICT JSON:
+  输出 STRICT JSON：
   {
     "score": <int 0-5>,
     "confidence": <float 0-1>,
-    "rationale": "<reasoning>",
-    "quote": "<exact quote from source content>"
+    "rationale": "<推理过程>",
+    "quote": "<源内容中的精确引用>"
   }

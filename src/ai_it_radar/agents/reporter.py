@@ -11,6 +11,7 @@ The report is a *period* summary, NOT a per-cycle delta:
 from __future__ import annotations
 
 import logging
+import re
 from datetime import datetime, timedelta
 from typing import Any
 
@@ -22,6 +23,8 @@ from ..settings import get_settings
 log = logging.getLogger(__name__)
 
 REPORT_PERIOD_DAYS = 7
+_CJK_RE = re.compile(r"[\u4e00-\u9fff]")
+_ASCII_WORD_RE = re.compile(r"[A-Za-z]{3,}")
 
 
 def reporter_node(state: GraphState, config: dict[str, Any] | None = None) -> dict:
@@ -67,6 +70,7 @@ def reporter_node(state: GraphState, config: dict[str, Any] | None = None) -> di
         monitor=items_by_band["monitor"],
     )
 
+    _log_language_drift_warnings(report)
     paths = render_report(report, out_dir=settings.reports_dir)
     log.info(
         "reporter (period=%dd): %d strong / %d watch / %d monitor -> %s",
@@ -76,3 +80,30 @@ def reporter_node(state: GraphState, config: dict[str, Any] | None = None) -> di
     )
 
     return {"report": report}
+
+
+def _looks_english_heavy(text: str) -> bool:
+    if not text:
+        return False
+    cjk_count = len(_CJK_RE.findall(text))
+    ascii_word_count = len(_ASCII_WORD_RE.findall(text))
+    return ascii_word_count >= 8 and ascii_word_count > (cjk_count * 2)
+
+
+def _log_language_drift_warnings(report: Report) -> None:
+    for band_items in (report.strong_recommend, report.watch, report.monitor):
+        for item in band_items:
+            if item.analysis and _looks_english_heavy(item.analysis.method_summary):
+                log.warning(
+                    "reporter: method_summary appears non-Chinese uid=%s",
+                    item.candidate.uid,
+                )
+            if not item.score:
+                continue
+            for dim in item.score.dimensions:
+                if _looks_english_heavy(dim.rationale):
+                    log.warning(
+                        "reporter: rationale appears non-Chinese uid=%s dim=%s",
+                        item.candidate.uid,
+                        dim.dimension_id,
+                    )

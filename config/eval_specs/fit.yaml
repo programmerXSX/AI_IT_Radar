@@ -2,29 +2,29 @@ id: fit
 display_name: "Lab Fit"
 weight: 0.25
 rubric:
-  0: "Unrelated to any anchor topic; no realistic Lab use case."
-  1: "Tangentially related; useful only as background reading."
-  2: "Adjacent to a Lab interest; might inspire a side project."
-  3: "Directly relevant to one anchor topic; a plausible candidate to try."
-  4: "Hits multiple Lab anchors; high marginal value to ongoing work."
-  5: "Strategic — directly enables or threatens a current Lab roadmap item."
+  0: "与任何锚定主题无关，不存在实际的 Lab 使用场景。"
+  1: "略微相关；仅适合作为背景阅读材料。"
+  2: "与 Lab 兴趣相邻；可能启发某个辅助项目。"
+  3: "与一个锚定主题直接相关；值得尝试的候选。"
+  4: "命中多个 Lab 锚点；对当前工作有很高的边际价值。"
+  5: "战略级——直接赋能或威胁 Lab 当前的路线图事项。"
 
 rag_neighbors_k: 3
 
 prompt_template: |
-  You are evaluating LAB FIT for the internal AI Lab below.
+  你正在为以下内部 AI Lab 评估 LAB FIT（实验室匹配度）。
 
-  ## Lab profile
+  ## Lab 画像
   {{ lab_profile_summary }}
 
-  Anchor topics & weights:
+  锚定主题及权重：
   {% for a in anchors %}- {{ a.topic }} (w={{ a.weight }}): {{ a.keywords | join(", ") }}
   {% endfor %}
-  Auto-learned topics:
+  自动学习的主题：
   {% for a in auto_learned %}- {{ a.topic }} (w={{ a.weight }})
   {% endfor %}
 
-  ## Candidate
+  ## 候选条目
   Title: {{ title }}
   Type: {{ kind }}
   Summary: {{ summary }}
@@ -32,15 +32,15 @@ prompt_template: |
   Content excerpt:
   {{ content }}
 
-  ## Task
-  Score LAB FIT 0-5 using the rubric. Justify by mapping concrete capabilities of the
-  candidate to specific anchor topics. Quote source content for each capability claimed.
+  ## 任务
+  使用以下 Rubric 对 LAB FIT 进行 0-5 评分。请将候选条目的具体能力与特定的锚定主题
+  进行映射来论证你的评分。为每项声称的能力引用源内容中的原文。
 
   Rubric:
   {% for k, v in rubric.items() %}- {{ k }}: {{ v }}
   {% endfor %}
 
-  Output STRICT JSON:
+  输出 STRICT JSON：
   {
     "score": <int>, "confidence": <float>,
     "rationale": "<...>", "quote": "<...>",

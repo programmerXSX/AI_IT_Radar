@@ -1,7 +1,7 @@
 # Information source configuration. Adapters consume this directly.
 
 arxiv:
-  enabled: true
+  enabled: false
   # arXiv categories — see https://arxiv.org/category_taxonomy
   categories:
     - cs.AI
@@ -21,33 +21,33 @@ arxiv:
   lookback_days: 7
 
 github_trending:
-#  enabled: true
-  enabled: false  #暂时关闭
+  enabled: true
+#  enabled: false  #暂时关闭
   languages:
     - python
     - ""        # any language
   spoken_language: ""   # leave empty to span all
   since: weekly         # daily | weekly | monthly
-  max_per_run: 20
+  max_per_run: 10
   # Fallback path: if HTML scrape fails, use Search API (sorted by recent star burst).
   fallback_search_api: true
   search_api_query: "stars:>50 created:>{lookback_iso} topic:llm OR topic:ai"
 
 huggingface:
-#  enabled: true
-  enabled: false  #暂时关闭
+  enabled: true
+#  enabled: false  #暂时关闭
   # We watch newly trending models + datasets.
   models:
     enabled: true
     sort: trendingScore
     direction: -1
-    limit: 25
+    limit: 5
     filter_tags: ["text-generation", "text2text-generation"]
   datasets:
     enabled: false
     sort: trendingScore
     direction: -1
-    limit: 10
+    limit: 5
 
 # Per-cycle exploration budget — fraction of low-profile-match-but-high-quality candidates
 # that bypass profile filtering, to mitigate profile drift / over-fitting.

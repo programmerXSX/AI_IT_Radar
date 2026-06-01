@@ -3,37 +3,36 @@ display_name: "Risk"
 weight: 0.15
 # Higher score = LOWER risk (more attractive). Aggregator inverts naturally.
 rubric:
-  0: "Severe risk: incompatible license, undisclosed data, single-author abandoned repo, security issues."
-  1: "Multiple concerning signals (license unclear AND single-maintainer)."
-  2: "One concerning signal (e.g. permissive but unmaintained 6 months)."
-  3: "Minor risks only; reasonable governance."
-  4: "Healthy: permissive license, multi-contributor, recent commits, transparent provenance."
-  5: "Best-in-class governance: permissive license, foundation/large org, public release process."
+  0: "严重风险：不兼容的许可证、未公开数据、单人已废弃仓库、安全问题。"
+  1: "多方面令人担忧的信号（许可证不明 且 单人维护）。"
+  2: "一个令人担忧的信号（例如许可证宽松但已 6 个月未维护）。"
+  3: "仅轻微风险；治理结构合理。"
+  4: "健康：宽松许可证、多人贡献、近期有提交、来源透明。"
+  5: "顶级治理：宽松许可证、基金会/大型组织背景、公开的发布流程。"
 
 rag_neighbors_k: 0
 
 prompt_template: |
-  You are flagging RISKS for adopting an external AI resource.
+  你正在识别采用外部 AI 资源的潜在 RISKS（风险）。
 
-  ## Candidate
+  ## 候选条目
   Title: {{ title }}
   Type: {{ kind }}
   License: {{ license or "UNKNOWN" }}
-  Maintainer signal: stars={{ stars or "n/a" }}, contributors={{ contributors or "n/a" }}, last_commit={{ last_commit or "n/a" }}
+  维护者信号: stars={{ stars or "n/a" }}, contributors={{ contributors or "n/a" }}, last_commit={{ last_commit or "n/a" }}
 
-  ## Content (look for: license clauses, training data origin, dependencies, abandonment signals)
+  ## 内容（关注：许可条款、训练数据来源、依赖项、废弃信号）
   {{ content }}
 
-  ## Task
-  Score 0-5 (higher = lower risk). List concrete risks identified. Cite source quotes
-  where applicable. Pay special attention to: license, training-data provenance, single
-  point of failure, security disclosures.
+  ## 任务
+  进行 0-5 评分（分数越高 = 风险越低）。列出已识别的具体风险。在适用的情况下
+  引用源内容中的原文。请特别关注：许可证、训练数据来源、单点故障、安全漏洞披露。
 
   Rubric:
   {% for k, v in rubric.items() %}- {{ k }}: {{ v }}
   {% endfor %}
 
-  Output STRICT JSON:
+  输出 STRICT JSON：
   {
     "score": <int>, "confidence": <float>,
     "rationale": "<...>", "quote": "<...>",

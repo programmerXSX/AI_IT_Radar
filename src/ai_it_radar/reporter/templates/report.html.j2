@@ -1,8 +1,8 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<title>AI IT Radar — {{ report.generated_at.strftime("%Y-%m-%d") }}</title>
+<title>AI 技术情报雷达 — {{ report.generated_at.strftime("%Y-%m-%d") }}</title>
 <style>
   :root {
     --bg: #0f1115; --card: #161a22; --text: #e6e8eb; --muted: #8a93a6;
@@ -57,10 +57,10 @@
 </head>
 <body>
 <header>
-  <h1>AI IT Radar</h1>
+  <h1>AI 技术情报雷达</h1>
   <span class="meta">
     {{ report.period_start.strftime("%Y-%m-%d") }} → {{ report.period_end.strftime("%Y-%m-%d") }}
-    · generated {{ report.generated_at.strftime("%Y-%m-%d %H:%M UTC") }}
+    · 生成于 {{ report.generated_at.strftime("%Y-%m-%d %H:%M UTC") }}
   </span>
 </header>
 
@@ -73,9 +73,9 @@
 <div id="server-status-banner" class="banner" hidden></div>
 
 <div class="summary">
-  <div class="pill strong">Strong Recommend: {{ report.strong_recommend | length }}</div>
-  <div class="pill watch">Watch: {{ report.watch | length }}</div>
-  <div class="pill monitor">Monitor: {{ report.monitor | length }}</div>
+  <div class="pill strong">{{ band_labels["strong_recommend"] }}: {{ report.strong_recommend | length }}</div>
+  <div class="pill watch">{{ band_labels["watch"] }}: {{ report.watch | length }}</div>
+  <div class="pill monitor">{{ band_labels["monitor"] }}: {{ report.monitor | length }}</div>
 </div>
 
 {% macro render_item(it) %}
@@ -84,10 +84,10 @@
   <article class="item" data-uid="{{ it.candidate.uid }}">
     <h3><a href="{{ it.candidate.url }}" target="_blank" rel="noopener">{{ it.candidate.title }}</a></h3>
     <div class="meta-line">
-      {{ it.candidate.source.value }} / {{ it.candidate.kind.value }}
+      {{ source_labels.get(it.candidate.source.value, it.candidate.source.value) }} / {{ kind_labels.get(it.candidate.kind.value, it.candidate.kind.value) }}
       {% if s %} ·
-        <span class="agg {{ band }}">aggregate {{ "%.2f"|format(s.aggregate) }} / 5.00</span>
-        {% if s.needs_human %}<span class="needs-human">[needs human review]</span>{% endif %}
+        <span class="agg {{ band }}">综合评分 {{ "%.2f"|format(s.aggregate) }} / 5.00（{{ band_labels.get(band, band) }}）</span>
+        {% if s.needs_human %}<span class="needs-human">[需人工复核]</span>{% endif %}
       {% endif %}
     </div>
 
@@ -103,13 +103,13 @@
 
     {% if s and s.dimensions %}
     <details>
-      <summary>Per-dimension scores</summary>
+      <summary>分维度评分</summary>
       <table class="dims">
-        <thead><tr><th>Dimension</th><th>Score</th><th>Confidence</th><th>Rationale</th></tr></thead>
+        <thead><tr><th>维度</th><th>分数</th><th>置信度</th><th>评分理由</th></tr></thead>
         <tbody>
         {% for d in s.dimensions %}
           <tr>
-            <td>{{ d.dimension_id }}</td>
+            <td>{{ dimension_labels.get(d.dimension_id, d.dimension_id) }}</td>
             <td>{{ d.score }}</td>
             <td>{{ "%.2f"|format(d.confidence) }}</td>
             <td>
@@ -129,33 +129,33 @@
     {% endif %}
 
     <div class="feedback">
-      <button class="adopt"  data-tag="adopt">Adopt</button>
-      <button class="watch"  data-tag="watch">Watch</button>
-      <button class="ignore" data-tag="ignore">Ignore</button>
+      <button class="adopt"  data-tag="adopt">采纳</button>
+      <button class="watch"  data-tag="watch">关注</button>
+      <button class="ignore" data-tag="ignore">忽略</button>
       <span class="ack" data-ack></span>
     </div>
   </article>
 {% endmacro %}
 
 <section class="band">
-  <h2>Strong Recommend</h2>
+  <h2>{{ band_labels["strong_recommend"] }}</h2>
   {% if report.strong_recommend %}
     {% for it in report.strong_recommend %}{{ render_item(it) }}{% endfor %}
-  {% else %}<p><em>No items.</em></p>{% endif %}
+  {% else %}<p><em>本档暂无条目。</em></p>{% endif %}
 </section>
 
 <section class="band">
-  <h2>Watch</h2>
+  <h2>{{ band_labels["watch"] }}</h2>
   {% if report.watch %}
     {% for it in report.watch %}{{ render_item(it) }}{% endfor %}
-  {% else %}<p><em>No items.</em></p>{% endif %}
+  {% else %}<p><em>本档暂无条目。</em></p>{% endif %}
 </section>
 
 <section class="band">
-  <h2>Monitor</h2>
+  <h2>{{ band_labels["monitor"] }}</h2>
   {% if report.monitor %}
     {% for it in report.monitor %}{{ render_item(it) }}{% endfor %}
-  {% else %}<p><em>No items.</em></p>{% endif %}
+  {% else %}<p><em>本档暂无条目。</em></p>{% endif %}
 </section>
 
 <script>
@@ -168,6 +168,7 @@
   const apiOverride = new URLSearchParams(location.search).get("api");
   const isFile = location.protocol === "file:";
   const FEEDBACK_BASE = apiOverride || (isFile ? "http://127.0.0.1:8765" : "");
+  const FEEDBACK_TAG_LABELS = { adopt: "采纳", watch: "关注", ignore: "忽略" };
 
   if (isFile && !apiOverride) {
     document.getElementById("file-protocol-banner").hidden = false;
@@ -196,7 +197,7 @@
       btn.addEventListener("click", async () => {
         const tag = btn.dataset.tag;
         const ack = art.querySelector("[data-ack]");
-        ack.textContent = "saving...";
+        ack.textContent = "保存中...";
         try {
           const r = await fetch(FEEDBACK_BASE + "/feedback", {
             method: "POST",
@@ -204,7 +205,7 @@
             body: JSON.stringify({ candidate_uid: uid, tag, user: "decision-maker" }),
           });
           if (r.ok) {
-            ack.textContent = "已记录: " + tag;
+            ack.textContent = "已记录: " + (FEEDBACK_TAG_LABELS[tag] || tag);
             ack.style.color = "#5fc28a";
           } else {
             ack.textContent = "失败 HTTP " + r.status;

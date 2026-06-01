@@ -12,24 +12,23 @@ from ..llm import llm_json, primary_llm
 from ..memory.kb import KnowledgeBase
 from ..schemas import Candidate
 
-_DEDUP_PROMPT = """You decide whether a NEW resource is essentially the SAME as an existing
-resource we have already catalogued. Treat as DUPLICATE only if it is the same paper,
-project, or model release (different versions/mirrors of the SAME thing count as duplicates).
-Two resources tackling related problems but with distinct contributions are NOT duplicates.
+_DEDUP_PROMPT = """你判断一个新资源是否与我们已收录的某个资源本质上是同一个。
+只有当它是同一篇论文、同一个项目或同一个模型发布时才判定为 DUPLICATE
+（同一事物的不同版本/镜像视为重复）。两个处理相关但贡献不同的资源不应判定为重复。
 
-## NEW
+## 新资源
 Title: {new_title}
 URL: {new_url}
 Summary: {new_summary}
 Content excerpt: {new_content}
 
-## CANDIDATES (vector neighbors)
+## 候选匹配项（向量近邻）
 {neighbors_block}
 
-Output STRICT JSON:
+输出 STRICT JSON：
 {{
-  "duplicate_uid": "<uid from candidates, or null>",
-  "reason": "<one sentence>"
+  "duplicate_uid": "<候选列表中的 uid，或 null>",
+  "reason": "<一句话原因>"
 }}
 """
 

@@ -520,6 +520,68 @@ uv run radar init
 
 或用 DashScope embedding（推荐），完全不下载本地模型。
 
+### 问题：关闭某个 source 后报告还有它的数据
+
+**这不是 bug，是 Reporter 的设计**。Reporter 不读当前 cycle 的状态，而是从 `data/radar.sqlite` 的 `scores` 表里拉**近 7 天的所有历史评分**，然后去重取最新。即使你在 `sources.yaml` 关了 arXiv，之前跑出来的 arXiv 评分只要还在 7 天窗口内，就会一直出现在报告里。
+
+同理，改了 API key 后 `--force` 重跑，旧 key 跑出的错误评分（如 `401 authentication_error`）也会残留——因为 Reporter 读的是 KB，不是当前 cycle 的结果。
+
+**解决方案：**
+
+| 场景 | 做法 |
+|---|---|
+| 等得起 | 等 7 天让旧评分自然过期，报告会自动干净 |
+| 等不起 | 完全清库重跑（见下方） |
+
+### 完全清库（重置所有数据）
+
+> ⚠️ **这会删除所有历史数据**：评分、反馈、IgnoreFilter 学习成果全部丢失。`config/lab_profile.yaml` 不在 `data/` 下，不会被删。
+
+**适用场景：**
+- 关闭了某个 source 但旧评分还在 7 天窗口内
+- 换了 API key 后发现 KB 里全是 401 错误评分
+- 大幅调整了 `eval_specs` prompt，旧评分完全失去参考价值
+- 换了 embedding 模型导致 Chroma dim mismatch
+- 彻底重新开始
+
+**操作步骤（PowerShell）：**
+
+```powershell
+# 1. 删除所有运行时数据
+Remove-Item -Force data/radar.sqlite, data/checkpoints.sqlite
+Remove-Item -Recurse -Force data/chroma
+
+# 2. 重新初始化（建表 + 灌种子）
+uv run radar init
+
+# 3. 确保 .env 和 sources.yaml 配置正确，然后跑一轮
+uv run radar run --force
+```
+
+**操作步骤（Bash / Git Bash / WSL）：**
+
+```bash
+rm -f data/radar.sqlite data/checkpoints.sqlite
+rm -rf data/chroma
+uv run radar init
+uv run radar run --force
+```
+
+**各文件说明：**
+
+| 文件 | 存什么 | 丢了会怎样 |
+|---|---|---|
+| `data/radar.sqlite` | 候选、分析、评分、反馈、eval_traces | 全部历史丢失，`radar init` 重建空库 |
+| `data/chroma/` | 候选文本的向量索引 | 重新生成（`radar init` 灌种子时 + 下轮 `radar run` 时重建），耗少量 embedding 调用 |
+| `data/checkpoints.sqlite` | LangGraph 的 node 级快照（用于断点续跑） | 无影响，下次自动新建 |
+
+**不需要删的文件：**
+- `config/lab_profile.yaml` — 画像（包含 anchors + 自动学习成果），清库后依然保留
+- `.env` — API key 和阈值
+- `config/sources.yaml` — 来源配置
+- `config/eval_specs/*.yaml` — 评测 prompt
+- `reports/` — 旧报告，下次 `radar run` 会自动覆盖
+
 ---
 
 ## 七、成本控制
@@ -634,4 +696,10 @@ sqlite3 data\radar.sqlite "SELECT * FROM feedback ORDER BY id DESC LIMIT 10"
 
 # CI / prompt 调优后
 uv run radar regression
+
+# 完全清库（重置）
+Remove-Item -Force data/radar.sqlite, data/checkpoints.sqlite
+Remove-Item -Recurse -Force data/chroma
+uv run radar init
+uv run radar run --force
 ```
